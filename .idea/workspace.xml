@@ -20,6 +20,7 @@
   </component>
   <component name="ProjectId" id="1lrxXf1hSSlsGrg8OzjeO9aiD7a" />
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
