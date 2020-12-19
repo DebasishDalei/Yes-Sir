@@ -486,6 +486,7 @@ class EditScreen(Screen):
         self.ids.bottom_box.remove_widget(self.textbox)
         self.ids.bottom_box.remove_widget(self.button)
 
+
 class SubmissionScreen(Screen):
     def on_enter(self, *args):
         global StaffName
@@ -637,16 +638,25 @@ class ReportScreen(Screen):
         result = tmp_cursor.fetchall()
         if len(result) == 1:
             cs_code = result[0][0]
-            print(cs_code)
-            table_rows = [["Aug", 100, 80], ["Sep", 100, 80], ["Oct", 100, 80], ["Nov", 100, 80], ["Dec", 100, 80],
-                          ["Jan", 100, 80]]
+            months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+            query = "SELECT MONTH(date),count(distinct DAY(date)) from attendance where cs_code=%s group by MONTH(date)"
+            val = (cs_code,)
+            tmp_cursor.execute(query, val)
+            result = tmp_cursor.fetchall()
+            table_rows = []
+            for row in result:
+                q = "select count(*) from attendance where cs_code=%s and MONTH(date)=%s and report='P'"
+                v = (cs_code, row[0],)
+                tmp_cursor.execute(q, v)
+                r = tmp_cursor.fetchall()
+                table_rows.append([months[row[0]-1], row[1], r[0][0] / row[1]])
             data_table = MDDataTable(pos_hint={'center_x': 0.5, 'center_y': 0.4},
                                      size_hint=(1, 1),
-                                     rows_num=6,
+                                     rows_num=len(table_rows),
                                      column_data=[
                                          ("Month", dp(20)),
-                                         ("Total Classes", dp(30)),
-                                         ("Present", dp(20)),
+                                         ("Total #of Classes", dp(30)),
+                                         ("Avg Attendance", dp(25)),
                                      ],
                                      row_data=table_rows
                                      )
