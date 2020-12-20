@@ -58,13 +58,12 @@ class StudentScreen(Screen):
 
 
 class StaffRegisterScreen(Screen):
-
     def on_enter(self, *args):
         query = "SELECT sid FROM staff_table"
         tmp_cursor.execute(query)
         result = tmp_cursor.fetchall()
         while True:
-            tmp = random.randint(0, 100000)  # Un-Redundent values are not accepted
+            tmp = random.randint(0, 100000)  # Redundent values are not accepted
             flag = 1
             for x in result:
                 if x[0] == tmp:
@@ -76,6 +75,14 @@ class StaffRegisterScreen(Screen):
         self.ids.stf_sid.text = "SID " + str(self.SID) + " (Remember it for login)"
 
     def submit(self):
+        if len(self.ids.stf_name.text) == 0 or len(self.ids.stf_department.text) == 0 or \
+                len(self.ids.stf_qualification.text) == 0 or len(self.ids.stf_email.text) == 0 or\
+                len(self.ids.stf_password.text) == 0:
+            popup = Popup(title='Required',
+                          content=MDLabel(text="Fill all credentials"),
+                          size_hint=(None, None), size=(300, 100))
+            popup.open()
+            return
         query = "INSERT INTO staff_table VALUES (%s,%s,%s,%s,%s,%s)"
         val = (
             self.ids.stf_name.text,
@@ -87,6 +94,14 @@ class StaffRegisterScreen(Screen):
         )
         tmp_cursor.execute(query, val)
         db.commit()
+        self.manager.current = 'staffloginscreen'
+
+    def on_leave(self, *args):
+        self.ids.stf_name.text = ""
+        self.ids.stf_department.text = ""
+        self.ids.stf_qualification.text = ""
+        self.ids.stf_email.text = ""
+        self.ids.stf_password.text = ""
 
 
 class StudentRegisterScreen(Screen):
@@ -112,6 +127,10 @@ class StaffLoginScreen(Screen):
                           content=MDLabel(text="Incorrect credentials"),
                           size_hint=(None, None), size=(300, 100))
             popup.open()
+
+    def on_leave(self, *args):
+        self.ids.stf_sid.text = ""
+        self.ids.stf_password.text = ""
 
 
 class StudentLoginScreen(Screen):
@@ -705,8 +724,34 @@ class ProfileScreen(Screen):
         global StaffID
         self.ids.staff_name.text = StaffName
 
+    def change_password(self):
+        global StaffID
+        old_pass = self.ids.old_password.text
+        new_pass = self.ids.new_password.text
+        query = "select password from staff_table where sid=%s"
+        value = (StaffID,)
+        tmp_cursor.execute(query, value)
+        result = tmp_cursor.fetchall()
+        if old_pass == result[0][0]:
+            query = "update staff_table set password=%s"
+            value = (new_pass,)
+            tmp_cursor.execute(query, value)
+            db.commit()
+            popup = Popup(title='Update',
+                          content=MDLabel(text="Password updated successfully"),
+                          size_hint=(None, None), size=(300, 100))
+            popup.open()
+        else:
+            popup = Popup(title='Update',
+                          content=MDLabel(text="Check current password"),
+                          size_hint=(None, None), size=(300, 100))
+            popup.open()
+        self.ids.old_password.text = ""
+        self.ids.new_password.text = ""
 
-
+    def on_leave(self, *args):
+        self.ids.old_password.text = ""
+        self.ids.new_password.text = ""
 
 
 sm.add_widget(RegisterScreen(name='registerscreen'))

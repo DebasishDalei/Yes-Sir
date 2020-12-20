@@ -99,9 +99,7 @@ ScreenManager:
         id:submit_btn
         text:'Submit'
         pos_hint:{'center_x':0.8,'center_y':0.1}
-        on_press:
-            root.submit()
-            root.manager.current = 'staffloginscreen'
+        on_press:root.submit()
 
 
 <StudentRegisterScreen>:
@@ -759,6 +757,25 @@ ScreenManager:
                     left_action_items:[['menu',lambda x:nav_drawer.toggle_nav_drawer()]]
                     elevation:10
                     pos_hint:{'center_y':0.95}
+                MDTextField:
+                    id:old_password
+                    hint_text:'Old Password'
+                    size_hint_x:None
+                    width:250
+                    pos_hint:{'center_x':0.5,'center_y':0.70}
+                MDTextField:
+                    id:new_password
+                    hint_text:'New Password'
+                    size_hint_x:None
+                    width:250
+                    pos_hint:{'center_x':0.5,'center_y':0.60}    
+                MDRectangleFlatButton:
+                    id:password_btn
+                    text:'Change'
+                    pos_hint:{'center_x':0.8,'center_y':0.50}
+                    on_press:
+                        root.change_password()
+                
                 
     MDNavigationDrawer:
         id:nav_drawer
