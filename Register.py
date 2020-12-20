@@ -638,7 +638,12 @@ class ReportScreen(Screen):
         result = tmp_cursor.fetchall()
         if len(result) == 1:
             cs_code = result[0][0]
-            months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+            query = "SELECT count(*) from student_class where cs_code=%s"
+            val = (cs_code,)
+            tmp_cursor.execute(query, val)
+            result = tmp_cursor.fetchall()
+            strength = result[0][0]
+            months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
             query = "SELECT MONTH(date),count(distinct DAY(date)) from attendance where cs_code=%s group by MONTH(date)"
             val = (cs_code,)
             tmp_cursor.execute(query, val)
@@ -649,18 +654,42 @@ class ReportScreen(Screen):
                 v = (cs_code, row[0],)
                 tmp_cursor.execute(q, v)
                 r = tmp_cursor.fetchall()
-                table_rows.append([months[row[0]-1], row[1], r[0][0] / row[1]])
-            data_table = MDDataTable(pos_hint={'center_x': 0.5, 'center_y': 0.4},
-                                     size_hint=(1, 1),
-                                     rows_num=len(table_rows),
-                                     column_data=[
-                                         ("Month", dp(20)),
-                                         ("Total #of Classes", dp(30)),
-                                         ("Avg Attendance", dp(25)),
-                                     ],
-                                     row_data=table_rows
-                                     )
-            self.ids.report_board.add_widget(data_table)
+                table_rows.append([months[row[0] - 1], row[1], r[0][0] / row[1]])
+
+            data_table = MDDataTable(
+                rows_num=len(table_rows),
+                column_data=[
+                    ("Month", dp(12)),
+                    (" Total Classes", dp(13)),
+                    ("  Average Attendance", dp(18))
+                ],
+                row_data=table_rows
+            )
+
+            class Content(BoxLayout):
+                def __init__(self, *args, **kwargs):
+                    super().__init__(**kwargs)
+                    self.size_hint_y = None
+                    self.height = Window.height * 0.6
+                    self.clear_widgets()
+                    self.add_widget(data_table)
+
+            dialog = MDDialog(
+                title="Strength: " + str(strength),
+                size_hint=(0.9, 1),
+                type="custom",
+                content_cls=Content()
+            )
+            dialog.open()
+
+    def on_leave(self, *args):
+        self.ids.class_label.text = ""
+        self.ids.subject_label.text = ""
+        global StaffID
+        global CLASS
+        global SUBJECT
+        CLASS = ""
+        SUBJECT = ""
 
 
 sm.add_widget(RegisterScreen(name='registerscreen'))

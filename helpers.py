@@ -653,7 +653,6 @@ ScreenManager:
                     left_action_items:[['menu',lambda x:nav_drawer.toggle_nav_drawer()]]
                     elevation:10
                     pos_hint:{'center_y':0.95}
-
                 BoxLayout:
                     orientation:'horizontal'
                     size_hint:(1,None)
@@ -682,12 +681,7 @@ ScreenManager:
                     MDLabel:
                         halign:'center'
                         id:subject_label
-                BoxLayout:
-                    id:report_board
-                    orientation:'horizontal'
-                    size_hint:(1,None)
-                    height:Window.height*0.7
-                    pos_hint:{'center_y':0.4}    
+                        
 
 
 
