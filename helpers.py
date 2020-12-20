@@ -14,6 +14,7 @@ ScreenManager:
     EditScreen:
     SubmissionScreen:
     ReportScreen:
+    ProfileScreen:
 
 <RegisterScreen>:
     name:'register'
@@ -220,10 +221,12 @@ ScreenManager:
                             icon:'account-badge-horizontal-outline'
                     OneLineIconListItem:
                         text:'Profile'
+                        on_release:root.manager.current='profilescreen'
                         IconLeftWidget:
                             icon:'cogs'
                     OneLineIconListItem:
                         text:'Logout'
+                        on_release:root.manager.current='register'
                         IconLeftWidget:
                             icon:'logout'
 
@@ -316,10 +319,12 @@ ScreenManager:
                             icon:'account-badge-horizontal-outline'
                     OneLineIconListItem:
                         text:'Profile'
+                        on_release:root.manager.current='profilescreen'
                         IconLeftWidget:
                             icon:'cogs'
                     OneLineIconListItem:
                         text:'Logout'
+                        on_release:root.manager.current='register'
                         IconLeftWidget:
                             icon:'logout'
 
@@ -420,10 +425,12 @@ ScreenManager:
                             icon:'account-badge-horizontal-outline'
                     OneLineIconListItem:
                         text:'Profile'
+                        on_release:root.manager.current='profilescreen'
                         IconLeftWidget:
                             icon:'cogs'
                     OneLineIconListItem:
                         text:'Logout'
+                        on_release:root.manager.current='register'
                         IconLeftWidget:
                             icon:'logout'
 
@@ -489,10 +496,12 @@ ScreenManager:
                             icon:'account-badge-horizontal-outline'
                     OneLineIconListItem:
                         text:'Profile'
+                        on_release:root.manager.current='profilescreen'
                         IconLeftWidget:
                             icon:'cogs'
                     OneLineIconListItem:
                         text:'Logout'
+                        on_release:root.manager.current='register'
                         IconLeftWidget:
                             icon:'logout'
 
@@ -567,10 +576,12 @@ ScreenManager:
                             icon:'account-badge-horizontal-outline'
                     OneLineIconListItem:
                         text:'Profile'
+                        on_release:root.manager.current='profilescreen'
                         IconLeftWidget:
                             icon:'cogs'
                     OneLineIconListItem:
                         text:'Logout'
+                        on_release:root.manager.current='register'
                         IconLeftWidget:
                             icon:'logout'
 
@@ -636,10 +647,12 @@ ScreenManager:
                             icon:'account-badge-horizontal-outline'
                     OneLineIconListItem:
                         text:'Profile'
+                        on_release:root.manager.current='profilescreen'
                         IconLeftWidget:
                             icon:'cogs'
                     OneLineIconListItem:
                         text:'Logout'
+                        on_release:root.manager.current='register'
                         IconLeftWidget:
                             icon:'logout'
 
@@ -680,10 +693,7 @@ ScreenManager:
                         id:class_label
                     MDLabel:
                         halign:'center'
-                        id:subject_label
-                        
-
-
+                        id:subject_label                   
 
     MDNavigationDrawer:
         id:nav_drawer
@@ -729,13 +739,80 @@ ScreenManager:
                             icon:'folder-clock-outline'
                     OneLineIconListItem:
                         text:'Profile'
+                        on_release:root.manager.current='profilescreen'
                         IconLeftWidget:
                             icon:'cogs'
                     OneLineIconListItem:
                         text:'Logout'
+                        on_release:root.manager.current='register'
                         IconLeftWidget:
                             icon:'logout'
 
+
+<ProfileScreen>:
+    name:'profilescreen'
+    NavigationLayout:
+        ScreenManager:
+            Screen:
+                MDToolbar:
+                    title:'Profile'
+                    left_action_items:[['menu',lambda x:nav_drawer.toggle_nav_drawer()]]
+                    elevation:10
+                    pos_hint:{'center_y':0.95}
+                
+    MDNavigationDrawer:
+        id:nav_drawer
+        BoxLayout:    
+            orientation:'vertical'
+            padding:(0,self.height*0.4,0,0)
+            spacing:20
+            canvas:
+                Color:
+                    rgb:(1,1,1,1)
+                RoundedRectangle:
+                    source:'Pics/profile_pic.png'
+                    size:(self.width*0.60,self.width*0.60)
+                    pos:(self.x+self.width*0.225,self.y+self.height*0.65)
+                    radius:[self.width*0.3]
+            MDLabel:
+                id:staff_name
+                size_hint_y:None
+                height:10
+                halign:'center'
+
+
+            ScrollView:
+                MDList:
+                    OneLineIconListItem:
+                        text:'Take attendance'
+                        on_release:root.manager.current='staffhomescreen'
+                        IconLeftWidget:
+                            icon:'clipboard-list-outline'
+                    OneLineIconListItem:
+                        text:'Add class'
+                        on_release:root.manager.current='addclassscreen'
+                        IconLeftWidget:
+                            icon:'account-multiple-plus'
+                    OneLineIconListItem:
+                        text:'Edit class'
+                        on_release:root.manager.current='editclassscreen'
+                        IconLeftWidget:
+                            icon:'account-edit'
+                    OneLineIconListItem:
+                        text:'Pre-submissions'
+                        on_release:root.manager.current='submissionscreen'
+                        IconLeftWidget:
+                            icon:'folder-clock-outline'
+                    OneLineIconListItem:
+                        text:'Monthly report'
+                        on_release:root.manager.current='reportscreen'
+                        IconLeftWidget:
+                            icon:'account-badge-horizontal-outline'
+                    OneLineIconListItem:
+                        text:'Logout'
+                        on_release:root.manager.current='register'
+                        IconLeftWidget:
+                            icon:'logout'
 """
 
 

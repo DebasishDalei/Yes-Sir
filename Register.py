@@ -37,8 +37,16 @@ time_obj = None
 sm = ScreenManager()
 
 
+def logout():
+    global StaffID
+    global StaffName
+    StaffID = ""
+    StaffName = ""
+
+
 class RegisterScreen(Screen):
-    pass
+    def on_enter(self, *args):
+        logout()
 
 
 class StaffScreen(Screen):
@@ -692,6 +700,15 @@ class ReportScreen(Screen):
         SUBJECT = ""
 
 
+class ProfileScreen(Screen):
+    def on_enter(self, *args):
+        global StaffID
+        self.ids.staff_name.text = StaffName
+
+
+
+
+
 sm.add_widget(RegisterScreen(name='registerscreen'))
 sm.add_widget(StaffScreen(name='staffscreen'))
 sm.add_widget(StudentScreen(name='studentscreen'))
@@ -706,6 +723,7 @@ sm.add_widget(EditClassScreen(name='editclassscreen'))
 sm.add_widget(EditScreen(name='editscreen'))
 sm.add_widget(SubmissionScreen(name='submissionscreen'))
 sm.add_widget(ReportScreen(name='reportscreen'))
+sm.add_widget(ProfileScreen(name='profilescreen'))
 
 
 class JobHub(MDApp):
