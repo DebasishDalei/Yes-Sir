@@ -923,11 +923,11 @@ sm.add_widget(StudentHomeScreen(name='studenthomescreen'))
 sm.add_widget(Profile(name='profile'))
 
 
-class JobHub(MDApp):
+class YesSir(MDApp):
     def build(self):
         self.theme_cls.primary_palette = 'Cyan'
         screen = Builder.load_string(register_page_helper)
         return screen
 
 
-JobHub().run()
+YesSir().run()

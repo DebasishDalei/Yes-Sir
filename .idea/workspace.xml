@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6a095974-92f6-484d-adef-c33c74fba801" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Register.py" beforeDir="false" afterPath="$PROJECT_DIR$/Register.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/helpers.py" afterDir="false" />
-    </list>
+    <list default="true" id="6a095974-92f6-484d-adef-c33c74fba801" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +141,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608485984817</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Student Module Complete">
+      <created>1608568460705</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1608568460705</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -166,6 +169,7 @@
     <MESSAGE value="Report Screen Updates" />
     <MESSAGE value="Logout" />
     <MESSAGE value="Staff Profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="Staff Profile" />
+    <MESSAGE value="Student Module Complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="Student Module Complete" />
   </component>
 </project>
