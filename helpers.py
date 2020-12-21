@@ -1,12 +1,10 @@
 register_page_helper = """
 ScreenManager:
     RegisterScreen:
+    
     StaffScreen:
-    StudentScreen:
     StaffRegisterScreen:
-    StudentRegisterScreen:
     StaffLoginScreen:
-    StudentLoginScreen:
     StaffHomeScreen:
     AttendanceScreen:
     AddClassScreen:
@@ -15,6 +13,12 @@ ScreenManager:
     SubmissionScreen:
     ReportScreen:
     ProfileScreen:
+    
+    StudentScreen:
+    StudentRegisterScreen:
+    StudentLoginScreen:
+    StudentHomeScreen:
+    Profile:
 
 <RegisterScreen>:
     name:'register'
@@ -47,11 +51,11 @@ ScreenManager:
     MDRectangleFlatButton:
         text:'Register'
         pos_hint:{'center_x':0.5,'center_y':0.7}
-        on_press:root.manager.current='staffregisterscreen'
+        on_press:root.manager.current='studentregisterscreen'
     MDRectangleFlatButton:
         text:'Login'
         pos_hint:{'center_x':0.5,'center_y':0.3}
-        on_press:root.manager.current='staffloginscreen'
+        on_press:root.manager.current='studentloginscreen'
 
 <StaffRegisterScreen>:
     name:'staffregisterscreen'
@@ -104,6 +108,32 @@ ScreenManager:
 
 <StudentRegisterScreen>:
     name:'studentregisterscreen'
+    MDToolbar:
+        title:'Student Registration'
+        pos_hint:{'center_y':0.95}
+    MDTextField:
+        id:std_name
+        hint_text:'Student Name'
+        size_hint_x:None
+        width:250
+        pos_hint:{'center_x':0.5,'center_y':0.80}
+    MDTextField:
+        id:std_rollno
+        hint_text:'Roll Number'
+        size_hint_x:None
+        width:250
+        pos_hint:{'center_x':0.5,'center_y':0.72}
+    MDTextField:
+        id:std_password
+        hint_text:'Password'
+        size_hint_x:None
+        width:250
+        pos_hint:{'center_x':0.5,'center_y':0.64}    
+    MDRectangleFlatButton:
+        id:submit_btn
+        text:'Submit'
+        pos_hint:{'center_x':0.8,'center_y':0.56}
+        on_press:root.submit()
 
 <StaffLoginScreen>:
     name:'staffloginscreen'
@@ -130,6 +160,26 @@ ScreenManager:
 
 <StudentLoginScreen>:
     name:'studentloginscreen'
+    MDToolbar:
+        title:'Student Login'
+        pos_hint:{'center_y':0.95}
+    MDTextField:
+        id:std_rollno
+        hint_text:'Roll Number'
+        size_hint_x:None
+        width:250
+        pos_hint:{'center_x':0.5,'center_y':0.5}
+    MDTextField:
+        id:std_password
+        hint_text:'Password'
+        size_hint_x:None
+        width:250
+        pos_hint:{'center_x':0.5,'center_y':0.42}
+    MDRectangleFlatButton:
+        id:submit_btn
+        text:'Submit'
+        pos_hint:{'center_x':0.8,'center_y':0.1}
+        on_press:root.submit()
 
 <StaffHomeScreen>:
     name:'staffhomescreen'
@@ -825,6 +875,121 @@ ScreenManager:
                         on_release:root.manager.current='reportscreen'
                         IconLeftWidget:
                             icon:'account-badge-horizontal-outline'
+                    OneLineIconListItem:
+                        text:'Logout'
+                        on_release:root.manager.current='register'
+                        IconLeftWidget:
+                            icon:'logout'
+                            
+<StudentHomeScreen>:
+    name:'studenthomescreen'
+    NavigationLayout:
+        ScreenManager:
+            Screen:
+                MDToolbar:
+                    title:'Dashboard'
+                    left_action_items:[['menu',lambda x:nav_drawer.toggle_nav_drawer()]]
+                    elevation:10
+                    pos_hint:{'center_y':0.95}
+                BoxLayout:
+                    id:dashboard
+                    pos_hint:{'center_x':0.5,'center_y':0.5}
+                    size_hint:(1,0.8)
+                    
+                
+    MDNavigationDrawer:
+        id:nav_drawer
+        BoxLayout:    
+            orientation:'vertical'
+            padding:(0,self.height*0.4,0,0)
+            spacing:20
+            canvas:
+                Color:
+                    rgb:(1,1,1,1)
+                RoundedRectangle:
+                    source:'Pics/profile_pic.png'
+                    size:(self.width*0.60,self.width*0.60)
+                    pos:(self.x+self.width*0.225,self.y+self.height*0.65)
+                    radius:[self.width*0.3]
+            MDLabel:
+                id:student_name
+                size_hint_y:None
+                height:10
+                halign:'center'
+
+
+            ScrollView:
+                MDList:
+                    OneLineIconListItem:
+                        text:'Profile'
+                        on_release:root.manager.current='profile'
+                        IconLeftWidget:
+                            icon:'cogs'
+                    OneLineIconListItem:
+                        text:'Logout'
+                        on_release:root.manager.current='register'
+                        IconLeftWidget:
+                            icon:'logout'
+ 
+    
+<Profile>:
+    name:'profile'
+    NavigationLayout:
+        ScreenManager:
+            Screen:
+                MDToolbar:
+                    title:'Profile'
+                    left_action_items:[['menu',lambda x:nav_drawer.toggle_nav_drawer()]]
+                    elevation:10
+                    pos_hint:{'center_y':0.95}
+                MDTextField:
+                    id:old_password
+                    hint_text:'Old Password'
+                    size_hint_x:None
+                    width:250
+                    pos_hint:{'center_x':0.5,'center_y':0.70}
+                MDTextField:
+                    id:new_password
+                    hint_text:'New Password'
+                    size_hint_x:None
+                    width:250
+                    pos_hint:{'center_x':0.5,'center_y':0.60}    
+                MDRectangleFlatButton:
+                    id:password_btn
+                    text:'Change'
+                    pos_hint:{'center_x':0.8,'center_y':0.50}
+                    on_press:
+                        root.change_password()
+                
+                
+    MDNavigationDrawer:
+        id:nav_drawer
+        BoxLayout:    
+            orientation:'vertical'
+            padding:(0,self.height*0.4,0,0)
+            spacing:20
+            canvas:
+                Color:
+                    rgb:(1,1,1,1)
+                RoundedRectangle:
+                    source:'Pics/profile_pic.png'
+                    size:(self.width*0.60,self.width*0.60)
+                    pos:(self.x+self.width*0.225,self.y+self.height*0.65)
+                    radius:[self.width*0.3]
+            MDLabel:
+                id:student_name
+                size_hint_y:None
+                height:10
+                halign:'center'
+
+
+            ScrollView:
+                MDList:
+                    OneLineIconListItem:
+                        text:'Dashboard'
+                        on_release:root.manager.current='studenthomescreen'
+                        IconLeftWidget:
+                            icon:'home-circle'
                     OneLineIconListItem:
                         text:'Logout'
                         on_release:root.manager.current='register'

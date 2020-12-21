@@ -4,7 +4,7 @@ from kivy.core.window import Window
 from helpers import register_page_helper
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.uix.dialog import MDDialog
-from kivymd.uix.list import MDList, OneLineIconListItem, OneLineListItem
+from kivymd.uix.list import MDList, OneLineIconListItem, ThreeLineIconListItem, IconLeftWidget
 from kivymd.uix.picker import MDDatePicker, MDTimePicker
 from kivy.uix.popup import Popup
 from kivymd.uix.label import MDLabel
@@ -33,6 +33,9 @@ class_obj = None
 subject_obj = None
 date_obj = None
 time_obj = None
+
+StudentRollNo = ""
+StudentName = ""
 
 sm = ScreenManager()
 
@@ -105,7 +108,24 @@ class StaffRegisterScreen(Screen):
 
 
 class StudentRegisterScreen(Screen):
-    pass
+    def submit(self):
+        if len(self.ids.std_name.text) == 0 or len(self.ids.std_rollno.text) == 0 or \
+                len(self.ids.std_password.text) == 0:
+            popup = Popup(title='Required',
+                          content=MDLabel(text="Fill all credentials"),
+                          size_hint=(None, None), size=(300, 100))
+            popup.open()
+            return
+        query = "INSERT INTO student_table VALUES(%s,%s,%s)"
+        val = (self.ids.std_name.text,self.ids.std_rollno.text,self.ids.std_password.text,)
+        tmp_cursor.execute(query, val)
+        db.commit()
+        self.manager.current = 'studentloginscreen'
+
+    def on_leave(self, *args):
+        self.ids.std_name.text = ""
+        self.ids.std_rollno.text = ""
+        self.ids.std_password.text = ""
 
 
 class StaffLoginScreen(Screen):
@@ -118,9 +138,8 @@ class StaffLoginScreen(Screen):
         result = tmp_cursor.fetchall()
         if len(result) == 1:
             print("Welcome")
-            StaffID = self.ids.stf_sid.text
-            for x in result:
-                StaffName = x[0]
+            StaffName = result[0][0]
+            StaffID = result[0][4]
             self.manager.current = 'staffhomescreen'
         else:
             popup = Popup(title='Error',
@@ -134,7 +153,27 @@ class StaffLoginScreen(Screen):
 
 
 class StudentLoginScreen(Screen):
-    pass
+    def submit(self):
+        global StudentName
+        global StudentRollNo
+        query = "SELECT * FROM student_table WHERE roll_no = %s AND password = %s"
+        val = (self.ids.std_rollno.text, self.ids.std_password.text)
+        tmp_cursor.execute(query, val)
+        result = tmp_cursor.fetchall()
+        if len(result) == 1:
+            print("Welcome")
+            StudentName = result[0][0]
+            StudentRollNo = result[0][1]
+            self.manager.current = 'studenthomescreen'
+        else:
+            popup = Popup(title='Error',
+                          content=MDLabel(text="Incorrect credentials"),
+                          size_hint=(None, None), size=(300, 100))
+            popup.open()
+
+    def on_leave(self, *args):
+        self.ids.std_rollno.text = ""
+        self.ids.std_password.text = ""
 
 
 class StaffHomeScreen(Screen):
@@ -683,22 +722,25 @@ class ReportScreen(Screen):
                 r = tmp_cursor.fetchall()
                 table_rows.append([months[row[0] - 1], row[1], r[0][0] / row[1]])
 
-            data_table = MDDataTable(
-                rows_num=len(table_rows),
-                column_data=[
-                    ("Month", dp(12)),
-                    (" Total Classes", dp(13)),
-                    ("  Average Attendance", dp(18))
-                ],
-                row_data=table_rows
-            )
-
             class Content(BoxLayout):
                 def __init__(self, *args, **kwargs):
                     super().__init__(**kwargs)
                     self.size_hint_y = None
                     self.height = Window.height * 0.6
                     self.clear_widgets()
+                    if len(table_rows) == 0:
+                        lbl = MDLabel(text='No data found', halign='center')
+                        self.add_widget(lbl)
+                        return
+                    data_table = MDDataTable(
+                        rows_num=len(table_rows),
+                        column_data=[
+                            ("Month", dp(12)),
+                            (" Total Classes", dp(13)),
+                            ("  Average Attendance", dp(18))
+                        ],
+                        row_data=table_rows
+                    )
                     self.add_widget(data_table)
 
             dialog = MDDialog(
@@ -733,8 +775,116 @@ class ProfileScreen(Screen):
         tmp_cursor.execute(query, value)
         result = tmp_cursor.fetchall()
         if old_pass == result[0][0]:
-            query = "update staff_table set password=%s"
-            value = (new_pass,)
+            query = "update staff_table set password=%s where sid=%s"
+            value = (new_pass,StaffID,)
+            tmp_cursor.execute(query, value)
+            db.commit()
+            popup = Popup(title='Update',
+                          content=MDLabel(text="Password updated successfully"),
+                          size_hint=(None, None), size=(300, 100))
+            popup.open()
+        else:
+            popup = Popup(title='Update',
+                          content=MDLabel(text="Check current password"),
+                          size_hint=(None, None), size=(300, 100))
+            popup.open()
+        self.ids.old_password.text = ""
+        self.ids.new_password.text = ""
+
+    def on_leave(self, *args):
+        self.ids.old_password.text = ""
+        self.ids.new_password.text = ""
+
+
+class StudentHomeScreen(Screen):
+    def on_enter(self, *args):
+        global StudentName
+        global StudentRollNo
+        self.ids.student_name.text = StudentName
+        query = "SELECT std.cs_code,stf.class,stf.subject,stft.name " \
+                "FROM student_class std,staff_class stf,staff_table stft " \
+                "where std.cs_code=stf.cs_code and stft.sid=stf.sid and std.roll_no=%s"
+        val = (StudentRollNo,)
+        tmp_cursor.execute(query, val)
+        result = tmp_cursor.fetchall()
+
+
+        class Content(BoxLayout):
+            def __init__(self, *args, **kwargs):
+                super().__init__(**kwargs)
+                global StudentRollNo
+                self.size_hint_y = None
+                self.height = Window.height * 0.6
+                self.clear_widgets()
+                months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+                query = "SELECT MONTH(date),count(distinct DAY(date)) from attendance where cs_code=%s group by MONTH(date)"
+                val = (self.id,)
+                tmp_cursor.execute(query, val)
+                result = tmp_cursor.fetchall()
+                table_rows = []
+                for row in result:
+                    q = "select count(*) from attendance where cs_code=%s and MONTH(date)=%s and roll_no=%s and report='P'"
+                    v = (self.id, row[0], StudentRollNo,)
+                    tmp_cursor.execute(q, v)
+                    r = tmp_cursor.fetchall()
+                    table_rows.append([months[row[0] - 1], row[1], r[0][0]])
+                if len(table_rows) == 0:
+                    lbl = MDLabel(text='No data found', halign='center')
+                    self.add_widget(lbl)
+                    return
+                data_table = MDDataTable(
+                    rows_num=len(table_rows),
+                    column_data=[
+                        ("Month", dp(12)),
+                        (" Total Classes", dp(13)),
+                        ("  Presents", dp(18))
+                    ],
+                    row_data=table_rows
+                )
+                self.add_widget(data_table)
+
+        class ClassList(ThreeLineIconListItem):
+            def setID(self, idd):
+                self.id = idd
+
+            def on_release(self):
+                obj = Content(id=self.id)
+                dialog = MDDialog(
+                    title="Attendance",
+                    size_hint=(0.9, 1),
+                    type="custom",
+                    content_cls=obj
+                )
+                dialog.open()
+
+        scrollview = ScrollView()
+        classes = MDList()
+        for row in result:
+            icon = IconLeftWidget(icon='account-group')
+            cls = ClassList(text=row[1], secondary_text=row[2], tertiary_text='Faculty:'+row[3])
+            cls.setID(row[0])
+            cls.add_widget(icon)
+            classes.add_widget(cls)
+        scrollview.add_widget(classes)
+        self.ids.dashboard.add_widget(scrollview)
+
+
+class Profile(Screen):
+    def on_enter(self, *args):
+        global StudentName
+        self.ids.student_name.text = StudentName
+
+    def change_password(self):
+        global StudentRollNo
+        old_pass = self.ids.old_password.text
+        new_pass = self.ids.new_password.text
+        query = "select password from student_table where roll_no=%s"
+        value = (StudentRollNo,)
+        tmp_cursor.execute(query, value)
+        result = tmp_cursor.fetchall()
+        if old_pass == result[0][0]:
+            query = "update student_table set password=%s where roll_no=%s"
+            value = (new_pass,StudentRollNo,)
             tmp_cursor.execute(query, value)
             db.commit()
             popup = Popup(title='Update',
@@ -769,6 +919,8 @@ sm.add_widget(EditScreen(name='editscreen'))
 sm.add_widget(SubmissionScreen(name='submissionscreen'))
 sm.add_widget(ReportScreen(name='reportscreen'))
 sm.add_widget(ProfileScreen(name='profilescreen'))
+sm.add_widget(StudentHomeScreen(name='studenthomescreen'))
+sm.add_widget(Profile(name='profile'))
 
 
 class JobHub(MDApp):
